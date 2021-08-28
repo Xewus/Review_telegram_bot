@@ -47,7 +47,7 @@ def send_message(message):
 
 
 def main():
-    current_timestamp = 1628587323  # int(time.time())
+    current_timestamp = int(time.time())
     while True:
         try:
             logger.debug('Program started')
@@ -56,10 +56,10 @@ def main():
                 message = parse_homework_status(homework)
                 send_message(message)
                 logger.info(f'Status sent to {CHAT_ID}')
-            time.sleep(5 * 60)  # Опрашивать раз в пять минут
+            time.sleep(5 * 60)
 
         except Exception as e:
-            message = f'Бот упал с ошибкой: {e} {time.time()}'
+            message = f'Бот упал с ошибкой: {e}'
             logger.error(message, exc_info=True)
             send_message(message)
             logger.info(f'Error sent to {CHAT_ID}')

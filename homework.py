@@ -7,11 +7,11 @@ from dotenv import load_dotenv
 from logging.handlers import RotatingFileHandler
 
 
-logging.basicConfig(filename='bot_logger.log', encoding='UTF-8',
+logging.basicConfig(filename='bot_log.log', encoding='UTF-8',
                     format='%(asctime)s, %(levelname)s, %(name)s, %(message)s')
 logger = logging.getLogger(__name__)
 logger.setLevel(10)
-handler = RotatingFileHandler('bot_logger.log', maxBytes=10 ** 7, backupCount=3)
+handler = RotatingFileHandler('bot_log.log', maxBytes=10 ** 7, backupCount=3)
 logger.addHandler(handler)
 
 load_dotenv()

@@ -56,7 +56,7 @@ def main():
                 message = parse_homework_status(homework)
                 send_message(message)
                 logger.info(f'Status sent to {CHAT_ID}')
-            time.sleep(5 * 60)
+            time.sleep(29 * 60)
 
         except Exception as e:
             message = f'Бот упал с ошибкой: {e}'
@@ -64,7 +64,7 @@ def main():
             send_message(message)
             logger.info(f'Error sent to {CHAT_ID}')
             print(message)
-            time.sleep(60 * 60)
+            time.sleep(29 * 60)
 
 
 if __name__ == '__main__':

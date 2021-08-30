@@ -43,6 +43,8 @@ def parse_homework_status(homework):
     if homework_name is None:
         raise KeyError('Отсутствует ключ "homework_name"')
     status = homework.get('status')
+    if status is None:
+        raise KeyError('Отсутствует ключ "status"')
     verdict = STATUSES.get(status)
     if verdict is None:
         raise ValueError(f'Получено неожиданное значение "status": "{status}"')

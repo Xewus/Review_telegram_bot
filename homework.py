@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-REQUESTS_PERIOD = 5 * 60
+REQUESTS_PERIOD = 20 * 60
 ERROR_PERIOD = 29 * 60
 REQUESTS_API_URL = 'https://praktikum.yandex.ru/api/user_api/'
 PRAKTIKUM_TOKEN = os.getenv('PRAKTIKUM_TOKEN')

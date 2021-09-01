@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-REQUESTS_PERIOD = 20 * 60
+REQUESTS_PERIOD = 10 * 60
 ERROR_PERIOD = 29 * 60
 REQUESTS_API_URL = 'https://praktikum.yandex.ru/api/user_api/'
 PRAKTIKUM_TOKEN = os.getenv('PRAKTIKUM_TOKEN')
@@ -38,6 +38,18 @@ logger.addHandler(stream_handler)
 bot = telegram.Bot(token=TELEGRAM_TOKEN)
 
 
+def send_message(message):
+    return bot.send_message(CHAT_ID, message)
+
+
+def send_log_error(message):
+    logger.error(message, exc_info=True)
+    send_message(message)
+    logger.info(f'Ошибка отправлена в чат: {CHAT_ID}\n'
+                f'текст сообщения: {message}')
+    time.sleep(ERROR_PERIOD)
+
+
 def parse_homework_status(homework):
     homework_name = homework.get('homework_name')
     if homework_name is None:
@@ -59,18 +71,7 @@ def get_homeworks(current_timestamp):
     code_200 = homework_statuses.status_code
     if code_200 != 200:
         raise ValueError(f'Некорректный ответ сервера, код "{code_200}"')
-    try:
-        return homework_statuses.json()
-    except json.JSONDecodeError as je:
-        message = f'Ошибка преобразования в JSON: {je}'
-        logger.error(message, exc_info=True)
-        send_message(message)
-        logger.info(f'Error sent to {CHAT_ID}')
-        time.sleep(ERROR_PERIOD)
-
-
-def send_message(message):
-    return bot.send_message(CHAT_ID, message)
+    return homework_statuses.json()
 
 
 def main():
@@ -79,21 +80,31 @@ def main():
         try:
             logger.debug('Program started')
             homeworks = get_homeworks(current_timestamp)
+            date_updated = homeworks.get('current_date')
+            if date_updated:
+                current_timestamp = date_updated
+            print(current_timestamp)
             homeworks = homeworks.get('homeworks')
             if homeworks is None:
                 raise KeyError('Отсутствует ключ "homeworks"')
             for homework in homeworks:
                 message = parse_homework_status(homework)
                 send_message(message)
-                logger.info(f'Status sent to {CHAT_ID}')
+
+                logger.info(f'Статус отправлен в чат {CHAT_ID}')
             time.sleep(REQUESTS_PERIOD)
+
+        except ConnectionError as ce:
+            message = f'Соединение не установлено. Ошибка {ce}'
+            send_log_error(message)
+
+        except json.JSONDecodeError as je:
+            message = f'Ошибка преобразования в JSON: {je}'
+            send_log_error(message)
 
         except Exception as e:
             message = f'Бот упал с ошибкой: {e}'
-            logger.error(message, exc_info=True)
-            send_message(message)
-            logger.info(f'Error sent to {CHAT_ID}')
-            time.sleep(ERROR_PERIOD)
+            send_log_error(message)
 
 
 if __name__ == '__main__':

@@ -14,7 +14,7 @@ load_dotenv()
 
 REQUESTS_PERIOD = 10 * 60
 ERROR_PERIOD = 29 * 60
-REQUESTS_API_URL = 'https://praktikum.yandex.ru/api/user_api/'
+API_URL = 'https://praktikum.yandex.ru/api/user_api/homework_statuses/'
 PRAKTIKUM_TOKEN = os.getenv('PRAKTIKUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
@@ -74,7 +74,7 @@ def parse_homework_status(homework):
 def get_homeworks(current_timestamp):
     try:
         homework_statuses = requests.get(
-            url=REQUESTS_API_URL + 'homework_statuses/',
+            url=API_URL,
             headers={'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'},
             params={'from_date': current_timestamp})
 

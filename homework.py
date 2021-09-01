@@ -64,14 +64,22 @@ def parse_homework_status(homework):
 
 
 def get_homeworks(current_timestamp):
-    homework_statuses = requests.get(
-        url=REQUESTS_API_URL + 'homework_statuses/',
-        headers={'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'},
-        params={'from_date': current_timestamp})
-    code_200 = homework_statuses.status_code
-    if code_200 != 200:
-        raise ValueError(f'Некорректный ответ сервера, код "{code_200}"')
-    return homework_statuses.json()
+    try:
+        homework_statuses = requests.get(
+            url=REQUESTS_API_URL + 'homework_statuses/',
+            headers={'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'},
+            params={'from_date': current_timestamp})
+        code_200 = homework_statuses.status_code
+        if code_200 != 200:
+            raise ValueError(f'Некорректный ответ сервера, код "{code_200}"')
+        return homework_statuses.json()
+    except ConnectionError as ce:
+        message = f'Соединение не установлено. Ошибка {ce}'
+        send_log_error(message)
+
+    except json.JSONDecodeError as je:
+        message = f'Ошибка преобразования в JSON: {je}'
+        send_log_error(message)
 
 
 def main():
@@ -93,14 +101,6 @@ def main():
 
                 logger.info(f'Статус отправлен в чат {CHAT_ID}')
             time.sleep(REQUESTS_PERIOD)
-
-        except ConnectionError as ce:
-            message = f'Соединение не установлено. Ошибка {ce}'
-            send_log_error(message)
-
-        except json.JSONDecodeError as je:
-            message = f'Ошибка преобразования в JSON: {je}'
-            send_log_error(message)
 
         except Exception as e:
             message = f'Бот упал с ошибкой: {e}'

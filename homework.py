@@ -94,15 +94,14 @@ def get_homeworks(current_timestamp):
 
 
 def main():
-    current_timestamp = int(time.time())
+    current_timestamp = 0
     while True:
         try:
             logger.debug('Program started')
             homeworks = get_homeworks(current_timestamp)
 
-            date_updated = homeworks.get('current_date')
-            if date_updated:
-                current_timestamp = date_updated
+            if homeworks.get('current_date'):
+                current_timestamp = homeworks.get('current_date')
 
             homeworks = homeworks.get('homeworks')
             if homeworks is None:

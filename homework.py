@@ -25,12 +25,16 @@ formatter = logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s')
 logger = logging.getLogger(__name__)
 logger.setLevel(10)
+
 rotating_handler = RotatingFileHandler(
     'bot_log.log', maxBytes=10 ** 7, backupCount=3)
+
 file_handler = logging.FileHandler('bot_log.log', encoding='UTF-8')
 file_handler.setFormatter(formatter)
+
 stream_handler = logging.StreamHandler()
 stream_handler.setLevel(30)
+
 logger.addHandler(rotating_handler)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
@@ -54,9 +58,11 @@ def parse_homework_status(homework):
     homework_name = homework.get('homework_name')
     if homework_name is None:
         raise KeyError('Отсутствует ключ "homework_name"')
+
     status = homework.get('status')
     if status is None:
         raise KeyError('Отсутствует ключ "status"')
+
     verdict = STATUSES.get(status)
     if verdict is None:
         raise ValueError(f'Получено неожиданное значение "status": "{status}"')
@@ -69,10 +75,12 @@ def get_homeworks(current_timestamp):
             url=REQUESTS_API_URL + 'homework_statuses/',
             headers={'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'},
             params={'from_date': current_timestamp})
+
         code_200 = homework_statuses.status_code
         if code_200 != 200:
             raise ValueError(f'Некорректный ответ сервера, код "{code_200}"')
         return homework_statuses.json()
+
     except ConnectionError as ce:
         message = f'Соединение не установлено. Ошибка {ce}'
         send_log_error(message)
@@ -88,17 +96,18 @@ def main():
         try:
             logger.debug('Program started')
             homeworks = get_homeworks(current_timestamp)
+
             date_updated = homeworks.get('current_date')
             if date_updated:
                 current_timestamp = date_updated
-            print(current_timestamp)
+
             homeworks = homeworks.get('homeworks')
             if homeworks is None:
                 raise KeyError('Отсутствует ключ "homeworks"')
+
             for homework in homeworks:
                 message = parse_homework_status(homework)
                 send_message(message)
-
                 logger.info(f'Статус отправлен в чат {CHAT_ID}')
             time.sleep(REQUESTS_PERIOD)
 

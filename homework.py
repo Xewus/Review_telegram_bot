@@ -8,6 +8,8 @@ import requests
 import telegram
 from dotenv import load_dotenv
 
+from http_statuses import num_statuses
+
 load_dotenv()
 
 REQUESTS_PERIOD = 10 * 60
@@ -76,9 +78,10 @@ def get_homeworks(current_timestamp):
             headers={'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'},
             params={'from_date': current_timestamp})
 
-        code_200 = homework_statuses.status_code
-        if code_200 != 200:
-            raise ValueError(f'Некорректный ответ сервера, код "{code_200}"')
+        statuse_code = homework_statuses.status_code
+        if statuse_code != 200:
+            statuse_code = num_statuses.get(statuse_code)
+            raise ValueError(f'Некорректный ответ сервера, код "{statuse_code}"')
         return homework_statuses.json()
 
     except ConnectionError as ce:

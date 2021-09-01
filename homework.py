@@ -80,8 +80,8 @@ def get_homeworks(current_timestamp):
 
         statuse_code = homework_statuses.status_code
         if statuse_code != 200:
-            statuse_code = num_statuses.get(statuse_code)
-            raise ValueError(f'Некорректный ответ сервера, код "{statuse_code}"')
+            code = num_statuses.get(statuse_code)
+            raise ValueError(f'Некорректный ответ сервера, код "{code}"')
         return homework_statuses.json()
 
     except ConnectionError as ce:

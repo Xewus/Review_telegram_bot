@@ -53,7 +53,6 @@ def send_log_error(message):
     send_message(message)
     logger.info(f'Ошибка отправлена в чат: {CHAT_ID}\n'
                 f'текст сообщения: {message}')
-    time.sleep(ERROR_PERIOD)
 
 
 def parse_homework_status(homework):
@@ -84,13 +83,14 @@ def get_homeworks(current_timestamp):
             raise ValueError(f'Некорректный ответ сервера, код "{code}"')
         return homework_statuses.json()
 
-    except ConnectionError as ce:
-        message = f'Соединение не установлено. Ошибка {ce}'
+    except requests.RequestException as re:
+        message = f'Ошибка при отправке запроса. Ошибка {ce}'
         send_log_error(message)
 
     except json.JSONDecodeError as je:
         message = f'Ошибка преобразования в JSON: {je}'
         send_log_error(message)
+    return {}
 
 
 def main():

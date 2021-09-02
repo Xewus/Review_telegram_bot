@@ -67,7 +67,7 @@ def parse_homework_status(homework):
     verdict = STATUSES.get(status)
     if verdict is None:
         raise ValueError(f'Получено неожиданное значение "status": "{status}"')
-    return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
+    return f' <HEROKU> У вас проверили работу "{homework_name}"!\n\n{verdict}'
 
 
 def get_homeworks(current_timestamp):

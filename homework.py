@@ -26,7 +26,7 @@ STATUSES = {'approved': 'Ревьюеру всё понравилось, раб�
 formatter = logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s')
 logger = logging.getLogger(__name__)
-logger.setLevel(10)
+logger.setLevel(logging.DEBUG)
 
 rotating_handler = RotatingFileHandler(
     'bot_log.log', maxBytes=10 ** 7, backupCount=3)
@@ -35,7 +35,7 @@ file_handler = logging.FileHandler('bot_log.log', encoding='UTF-8')
 file_handler.setFormatter(formatter)
 
 stream_handler = logging.StreamHandler()
-stream_handler.setLevel(30)
+stream_handler.setLevel(logging.ERROR)
 
 logger.addHandler(rotating_handler)
 logger.addHandler(file_handler)
@@ -79,8 +79,9 @@ def get_homeworks(current_timestamp):
 
         statuse_code = homework_statuses.status_code
         if statuse_code != 200:
-            code = num_statuses.get(statuse_code)
-            raise ValueError(f'Некорректный ответ сервера, код "{code}"')
+            desc = num_statuses.get(statuse_code)
+            raise ValueError(
+                f'Некорректный ответ сервера: "{statuse_code}" ({desc})')
         return homework_statuses.json()
 
     except requests.RequestException as re:
@@ -90,8 +91,6 @@ def get_homeworks(current_timestamp):
     except json.JSONDecodeError as je:
         message = f'Ошибка преобразования в JSON: {je}'
         send_log_error(message)
-    # Эмм... Непонятно. Либо исполняется try либо уходит в ошибку,
-    # как дойдёт сюда?
     return {}
 
 
@@ -118,6 +117,7 @@ def main():
         except Exception as e:
             message = f'Бот упал с ошибкой: {e}'
             send_log_error(message)
+            time.sleep(ERROR_PERIOD)
 
 
 if __name__ == '__main__':

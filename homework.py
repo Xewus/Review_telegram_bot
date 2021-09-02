@@ -84,17 +84,19 @@ def get_homeworks(current_timestamp):
         return homework_statuses.json()
 
     except requests.RequestException as re:
-        message = f'Ошибка при отправке запроса. Ошибка {ce}'
+        message = f'Ошибка при отправке запроса. Ошибка {re}'
         send_log_error(message)
 
     except json.JSONDecodeError as je:
         message = f'Ошибка преобразования в JSON: {je}'
         send_log_error(message)
+    # Эмм... Непонятно. Либо исполняется try либо уходит в ошибку,
+    # как дойдёт сюда?
     return {}
 
 
 def main():
-    current_timestamp = 0
+    current_timestamp = int(time.time())
     while True:
         try:
             logger.debug('Program started')

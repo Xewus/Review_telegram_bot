@@ -101,8 +101,9 @@ def main():
             logger.debug('Program started')
             homeworks = get_homeworks(current_timestamp)
 
-            if homeworks.get('current_date'):
-                current_timestamp = homeworks.get('current_date')
+            current_date = homeworks.get('current_date')
+            if current_date:
+                current_timestamp = current_date
 
             homeworks = homeworks.get('homeworks')
             if homeworks is None:

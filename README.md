@@ -1,2 +1,3 @@
-# api_sp1_bot
-api sp1 bot
+# Homework bot
+
+The telegram bot that checks the results of reviw tasks by API
